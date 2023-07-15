@@ -20,11 +20,3 @@ npm install
 npm --version
 yarn add dotenv axios
 ```
-
-## Research Notes
-
-Explanation of how to use edits with the Dall-E API: https://platform.openai.com/docs/guides/images/usage.
-- Editing an image requires having a mask (i.e., a PNG with transparent pixels indicating where edits should be made).
-
-## Other Ideas
-- *Document scanning to semantic search*. You scan a document; the text gets chunked and embedded into a vector database; and you can search and print excerpts.
