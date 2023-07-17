@@ -1,0 +1,63 @@
+.message {
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    background-color: #5559;
+    border-radius: 0.2em;
+    position: relative;
+    padding: 1em;
+    margin-bottom: 5px;
+}
+.message:last-child {
+    margin-bottom: 0;
+}
+.datetime {
+    font-size: 0.7em;
+    color: #e6e6e6;
+}
+.inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.text {
+    margin-right: 10px;
+}
+.text .item {
+    margin: 0;
+}
+.textTime {
+    margin-right: 0.5em;
+    font-size: 0.8em;
+    color: #AAA;
+}
+.textText {
+    color: #FFF;
+}
+
+.action {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
+}
+
+.actionBottom {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
+    z-index: 1;
+}
+.actionTop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
