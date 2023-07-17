@@ -19,6 +19,7 @@ $ RemoteSigned
 $ npm install
 $ npm --version
 $ yarn add dotenv axios
+$ pip install -e git+https://github.com/openai/whisper.git#egg=openai-whisper
 ```
 
 ### Setup
