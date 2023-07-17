@@ -1,4 +1,4 @@
-# Scan Print Pipeline
+# Transcribe Print Pipeline
 
 A project for the Epson Challenge Hackathon.
 
