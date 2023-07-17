@@ -7,7 +7,7 @@ A project for the Epson Challenge Hackathon.
 ### Dependencies and Usage
 #### Windows Execution Policy Change
 ```r
-Run the following commands sequentially:
+Run Sequentially in PowerShell:
 
 Set-ExecutionPolicy RemoteSigned :: select "y"
 Get-ExecutionPolicy
