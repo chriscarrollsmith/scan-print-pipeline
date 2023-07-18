@@ -19,6 +19,7 @@ $ RemoteSigned
 $ npm install
 $ npm --version
 $ yarn add dotenv axios
+$ npm install mic-recorder-to-mp3
 ```
 
 ### Setup
