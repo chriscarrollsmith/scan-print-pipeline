@@ -38,6 +38,14 @@ dotenv@^16.3.1:
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.3.1.tgz"
   integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
 
+epson-connect-js@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/epson-connect-js/-/epson-connect-js-1.0.3.tgz"
+  integrity sha512-yZ8YLgryjkFDDNPPzt3YB7F3ecowID7WAHt9RaJES5u63b8BaMF/l6j/dvSq+8rd8la7KeqZUhNGYg5X1Juw/w==
+  dependencies:
+    axios "^1.4.0"
+    moment "^2.29.4"
+
 follow-redirects@^1.15.0:
   version "1.15.2"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
@@ -70,6 +78,11 @@ mime-types@^2.1.12:
   integrity sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==
   dependencies:
     mime-db "1.52.0"
+
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
 
 proxy-from-env@^1.1.0:
   version "1.1.0"
