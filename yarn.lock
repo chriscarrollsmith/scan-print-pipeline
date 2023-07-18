@@ -97,14 +97,6 @@ dotenv@^16.3.1:
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.3.1.tgz"
   integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
 
-epson-connect-js@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/epson-connect-js/-/epson-connect-js-1.0.3.tgz"
-  integrity sha512-yZ8YLgryjkFDDNPPzt3YB7F3ecowID7WAHt9RaJES5u63b8BaMF/l6j/dvSq+8rd8la7KeqZUhNGYg5X1Juw/w==
-  dependencies:
-    axios "^1.4.0"
-    moment "^2.29.4"
-
 follow-redirects@^1.15.0:
   version "1.15.2"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
@@ -151,6 +143,13 @@ js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
+lamejs@^1.2.0:
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/lamejs/-/lamejs-1.2.1.tgz"
+  integrity sha512-s7bxvjvYthw6oPLCm5pFxvA84wUROODB8jEO2+CE1adhKgrIvVOlmMgY8zyugxGrvRaDHNJanOiS21/emty6dQ==
+  dependencies:
+    use-strict "1.0.1"
+
 loose-envify@^1.1.0:
   version "1.4.0"
   resolved "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz"
@@ -162,6 +161,13 @@ media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
+
+mic-recorder-to-mp3@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.npmjs.org/mic-recorder-to-mp3/-/mic-recorder-to-mp3-2.2.2.tgz"
+  integrity sha512-xDkOaHbojW3bdKOGn9CI5dT+Mc0RrfczsX/Y1zGJp3FUB4zei5ZKFnNm7Nguc9v910wkd7T3csnCTq5EtCF3Zw==
+  dependencies:
+    lamejs "^1.2.0"
 
 mime-db@1.52.0:
   version "1.52.0"
@@ -310,6 +316,11 @@ scheduler@^0.23.0:
   dependencies:
     loose-envify "^1.1.0"
 
+sdp@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.npmjs.org/sdp/-/sdp-3.2.0.tgz"
+  integrity sha512-d7wDPgDV3DDiqulJjKiV2865wKsJ34YI+NDREbm+FySq6WuKOikwyNQcm+doLAZ1O6ltdO0SeKle2xMpN3Brgw==
+
 source-map-js@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/source-map-js/-/source-map-js-1.0.2.tgz"
@@ -359,6 +370,11 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
+use-strict@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/use-strict/-/use-strict-1.0.1.tgz"
+  integrity sha512-IeiWvvEXfW5ltKVMkxq6FvNf2LojMKvB2OCeja6+ct24S1XOmQw2dGr2JyndwACWAGJva9B7yPHwAmeA9QCqAQ==
+
 util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
@@ -371,6 +387,13 @@ watchpack@2.4.0:
   dependencies:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
+
+webrtc-adapter@>=4.1.1:
+  version "8.2.3"
+  resolved "https://registry.npmjs.org/webrtc-adapter/-/webrtc-adapter-8.2.3.tgz"
+  integrity sha512-gnmRz++suzmvxtp3ehQts6s2JtAGPuDPjA1F3a9ckNpG1kYdYuHWYpazoAnL9FS5/B21tKlhkorbdCXat0+4xQ==
+  dependencies:
+    sdp "^3.2.0"
 
 xtend@^4.0.0:
   version "4.0.2"
