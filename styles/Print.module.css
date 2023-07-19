@@ -18,3 +18,8 @@
     font-size: 3.5rem;
     color: #2477DD;
   }
+  
+  .title,
+  .description {
+    text-align: center;
+  }

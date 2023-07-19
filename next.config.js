@@ -28,13 +28,5 @@ module.exports = {
     serverRuntimeConfig: {
       PROJECT_ROOT: __dirname,
     },
-    trailingSlash: true,
-    exportPathMap: async function(
-      defaultPathMap,
-      { dev, dir, outDir, distDir, buildId }
-    ) {
-      return {
-        '/': { page: '/' },
-      };
-    }
+    trailingSlash: true
 }
