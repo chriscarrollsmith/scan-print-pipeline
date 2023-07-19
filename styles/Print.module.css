@@ -23,3 +23,53 @@
   .description {
     text-align: center;
   }
+
+  .description {
+    margin: 2rem 0;
+    line-height: 1.5;
+    font-size: 1.5rem;
+  }
+
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Four columns per row */
+    gap: 10px;
+  }
+  
+  .cell {
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  @media (max-width: 600px) {
+    .row {
+      grid-template-columns: 1fr; /* Each row has one column in small screens */
+    }
+  }
+  
+  .printbuttonroot {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .printbutton {
+    background-color: #2477DD;
+    color: white;
+    border: none;
+    width: 10rem;
+    border-radius: 10px;
+    padding: 0.5rem;
+  }
+  
+  .printbutton:hover {
+    opacity: 0.9;
+  }
+  
