@@ -17,7 +17,7 @@ const Home = () => {
 
   const startRecording = () => {
     if (isBlocked) {
-      console.log('Permission Denied');
+      console.log('Permission denied');
       setIsBlocked(true);
     } else {
       recorder
@@ -76,22 +76,22 @@ const Home = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Epson Hackathon</title>
-        <meta name="description" content="Transcribe Print Pipeline" />
+        <title>SessionScribe</title>
+        <meta name="description" content="An audio-transcription-to-print pipline for academic conference sessions" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-        EPSON
+        SessionScribe
         </h1>
         <h1 className={styles.title}>
-        Transcribe Printing
+        Record a session
         </h1>
 
-        <p className={styles.description}> Obtain a Transcript by Recording an Audio </p>
-        {isRecording ? <p className={styles.warning}> Recording in Progress... </p> : <p className={styles.warning}> Allow Microphone Permissions </p>}
-        {isBlocked ? <p className={styles.blocked}> Microphone Access Denied </p> : null}
+        <p className={styles.description}> Record an audio file, then click "Generate" to automatically transcribe and upload </p>
+        {isRecording ? <p className={styles.warning}> Now recording your audio... </p> : <p className={styles.warning}> Allow microphone permissions after clicking "Record" </p>}
+        {isBlocked ? <p className={styles.blocked}> Microphone access denied </p> : null}
 
         <div className={styles.whispercontainer}>
           
@@ -118,7 +118,7 @@ const Home = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Created by Christopher Carroll & Kevin Mora
+          Created by Christopher Carroll Smith & Kevin Mora
         </a>
       </footer>
     </div>
