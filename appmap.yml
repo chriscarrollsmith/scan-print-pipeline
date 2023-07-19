@@ -1,0 +1,7 @@
+name: transcribe-print-pipeline
+packages:
+  - path: lib
+  - path: pages
+  - path: scripts
+language: javascript
+appmap_dir: tmp/appmap
