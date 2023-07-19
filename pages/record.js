@@ -58,19 +58,29 @@ const Record = () => {
         setLoading(true);
         setIsRecording(false);
         
+        const formData = new FormData();
+        formData.append('file', new Blob([audio], { type: 'audio/webm' }));
+        formData.append('name', 'recorded_audio');
+        formData.append('datetime', new Date().toISOString());
+
+        // options can be changed according to requirements
+        const options = {
+          language: 'en', 
+          temperature: 0.7,
+          endpoint: 'transcriptions'
+        };
+        formData.append('options', JSON.stringify(options));
+
         const response = await fetch("/api/whisper", {
           method: "POST",
-          headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ audio: audio }),
-      });
-      
-      const data = await response.json();
-      setLoading(false);
-      setTranscript(data.modelOutputs[0].text);
+          body: formData
+        });
 
-  };
+        const data = await response.json();
+        console.log(data);
+        setLoading(false);
+        setTranscript(data.data);
+      };
   
   return (
     <div className="container">
