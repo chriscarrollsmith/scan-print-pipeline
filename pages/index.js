@@ -73,12 +73,12 @@ const Home = () => {
   };
   
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
+    <div className="container">
+      <main className="main">
+        <h1 className="title">
           SessionScribe
         </h1>
-        <h1 className={styles.title}>
+        <h1 className="title">
           Record a session
         </h1>
 

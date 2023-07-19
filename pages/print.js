@@ -1,13 +1,13 @@
-import styles from '../styles/Home.module.css'
+import styles from '../styles/Print.module.css'
 
 const Print = () => {
     return (
-        <div className={styles.container}>
-            <main className={styles.main}>
-                <h1 className={styles.title}>
+        <div className="container">
+            <main className="main">
+                <h1 className="title">
                     SessionScribe
                 </h1>
-                <h1 className={styles.title}>
+                <h1 className="title">
                     Print a transcript
                 </h1>
             </main>
