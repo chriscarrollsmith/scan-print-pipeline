@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { useState, useMemo } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
@@ -75,18 +74,12 @@ const Home = () => {
   
   return (
     <div className={styles.container}>
-      <Head>
-        <title>SessionScribe</title>
-        <meta name="description" content="An audio-transcription-to-print pipline for academic conference sessions" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <main className={styles.main}>
         <h1 className={styles.title}>
-        SessionScribe
+          SessionScribe
         </h1>
         <h1 className={styles.title}>
-        Record a session
+          Record a session
         </h1>
 
         <p className={styles.description}> Record an audio file, then click "Generate" to automatically transcribe and upload </p>
@@ -94,33 +87,21 @@ const Home = () => {
         {isBlocked ? <p className={styles.blocked}> Microphone access denied </p> : null}
 
         <div className={styles.whispercontainer}>
-          
           <div className = {styles.allbuttons}>
-       <button onClick = {startRecording} disabled = {isRecording} className = {styles.recordbutton}>Record</button>
-       <button onClick = {stopRecording} disabled = {!isRecording} className = {styles.stopbutton}>Stop</button>
-       </div>
-
-      <div className = {styles.audiopreview}>
-       <audio src={blobURL} controls="controls" />
-       </div>
-       <div className = {styles.loading}>
-       {loading ? <p>Processing...</p> :  <p>{transcript}</p>}
-       </div>
+            <button onClick = {startRecording} disabled = {isRecording} className = {styles.recordbutton}>Record</button>
+            <button onClick = {stopRecording} disabled = {!isRecording} className = {styles.stopbutton}>Stop</button>
+          </div>
+          <div className = {styles.audiopreview}>
+            <audio src={blobURL} controls="controls" />
+          </div>
+          <div className = {styles.loading}>
+          {loading ? <p>Processing...</p> :  <p>{transcript}</p>}
+          </div>
           <div className = {styles.generatebuttonroot}>
             <button type = "submit" className = {styles.generatebutton} onClick = {handleSubmit} disabled = {!audio}>Generate</button>
-            </div>
-            </div>
-            </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Created by Christopher Carroll Smith & Kevin Mora
-        </a>
-      </footer>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
