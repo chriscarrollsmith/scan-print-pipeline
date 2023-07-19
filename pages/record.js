@@ -82,7 +82,7 @@ const Record = () => {
           Record a session
         </h1>
 
-        <p className={styles.description}> Record an audio file, then click "Generate" to automatically transcribe and upload </p>
+        <p className={styles.description}> Record an audio file, then click "Transcribe" to generate and upload a transcription of your recorded audio </p>
         {isRecording ? <p className={styles.warning}> Now recording your audio... </p> : <p className={styles.warning}> Allow microphone permissions after clicking "Record" </p>}
         {isBlocked ? <p className={styles.blocked}> Microphone access denied </p> : null}
 
@@ -98,7 +98,7 @@ const Record = () => {
           {loading ? <p>Processing...</p> :  <p>{transcript}</p>}
           </div>
           <div className = {styles.generatebuttonroot}>
-            <button type = "submit" className = {styles.generatebutton} onClick = {handleSubmit} disabled = {!audio}>Generate</button>
+            <button type = "submit" className = {styles.generatebutton} onClick = {handleSubmit} disabled = {!audio}>Transcribe</button>
           </div>
         </div>
       </main>

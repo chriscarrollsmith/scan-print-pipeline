@@ -21,3 +21,6 @@ yarn-error.log*
 .env
 env/
 ENV/
+
+# JSON keys
+gcloudauth.json

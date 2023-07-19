@@ -33,20 +33,19 @@ function createPdf(sessionTitle, presenters, content) {
     // Create a PDFKit document
     const pdfDoc = pdfmake.createPdf(docDefinition);
 
-    // Collect chunks of data as they are generated
-    const chunks = [];
-    pdfDoc.on('data', chunk => chunks.push(chunk));
-    
-    // When the PDF generation is complete, resolve the Promise
-    pdfDoc.on('end', () => {
-      const pdfBuffer = Buffer.concat(chunks);
-      resolve(pdfBuffer);
+    // Get buffer
+    pdfDoc.getBuffer(buffer => {
+      // Convert buffer to base64 string
+      const base64String = buffer.toString('base64');
+      resolve(base64String);
     });
 
-    // If there's an error, reject the Promise
-    pdfDoc.on('error', reject);
+    // Error event listener
+    pdfDoc.on('error', err => {
+      // Reject the promise with the error
+      reject(err);
+    });
 
-    // Start the PDF generation
     pdfDoc.end();
   });
 }
