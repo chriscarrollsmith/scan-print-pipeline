@@ -18,7 +18,7 @@ $ RemoteSigned
 
 ### VS Code Terminal
 
-```r
+```java
 $ npm install
 $ npm --version
 $ yarn add dotenv axios
