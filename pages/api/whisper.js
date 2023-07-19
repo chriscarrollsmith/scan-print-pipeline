@@ -1,33 +1,29 @@
-import { IncomingForm } from 'formidable'
-import axios from 'axios'
-import FormData from 'form-data'
-import fs from 'fs'
+import { IncomingForm } from 'formidable';
+import axios from 'axios';
+import FormData from 'form-data';
+import fs from 'fs';
 
 const cleanInput = (s) => {
   if (typeof s === "undefined") return "";
   if (s === null) return "";
   if (typeof s !== "string") return String(s);
   return s.trim();
-}
+};
 
 export const config = {
   api: {
     bodyParser: false,
   },
-}
+};
 
 export default async function whisperAPI(req, res) {
   if (req.method === 'POST') {
-    console.log('POST request received'); // Added logging
+    console.log('POST request received');
     const data = await new Promise((resolve, reject) => {
       const form = new IncomingForm();
-      
+
       form.parse(req, (err, fields, files) => {
-        if (err) {
-          console.error('Error parsing form:', err); // Added logging
-          reject(err);
-        }
-        console.log('Form parsed:', {fields, files}); // Added logging
+        if (err) reject(err);
         resolve({fields, files});
       });
     });
@@ -37,66 +33,44 @@ export default async function whisperAPI(req, res) {
     const datetime = cleanInput(data.fields.datetime);
     const raw_options = cleanInput(data.fields.options);
 
-    /**
-     * Simple form validation
-     */
-    if(!file || !name || !datetime) {
-        console.error('Bad request:', {file, name, datetime}); // Added logging
+    if (!file || !name || !datetime) {
         return res.status(400).json({ message: 'Bad Request' });
     }
 
     const options = JSON.parse(raw_options);
-    console.log('Options:', options); // Added logging
     const filename = `${name}.webm`;
 
-    let header = {
-      'Content-Type': 'multipart/form-data',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-    }
-
-    let formData = new FormData()
-    console.log('File path:', file);
+    let formData = new FormData();
     const fileStream = fs.createReadStream(file.filepath);
-    formData.append('file', fileStream, filename); // Append the file directly
-    formData.append('model', 'whisper-1')
-    formData.append('response_format', 'vtt') // e.g. text, vtt, srt
-    formData.append('temperature', options.temperature)
-    formData.append('language', options.language)
+    formData.append('file', fileStream, filename);
+    formData.append('model', 'whisper-1');
+    formData.append('response_format', 'vtt');
+    formData.append('temperature', options.temperature);
+    formData.append('language', options.language);
 
-    const url = options.endpoint === 'transcriptions' ? 'https://api.openai.com/v1/audio/transcriptions' : 'https://api.openai.com/v1/audio/translations'
-    console.log('URL:', url); // Added logging
-    
+    const url = options.endpoint === 'transcriptions' ? 'https://api.openai.com/v1/audio/transcriptions' : 'https://api.openai.com/v1/audio/translations';
+
+    // Get the headers from the form data (this includes the correct Content-Type header)
+    const formHeaders = formData.getHeaders();
+
     try {
-      let result = await new Promise((resolve, reject) => {
-        axios.post(url, formData, {
-            headers: {
-                ...header,
-            }
-        }).then((response) => {
-            console.log('API response received:', response); // Added logging
-            resolve(response); // Returning the whole response object
-        }).catch((error) => {
-            console.error('API error:', error); // Added logging
-            reject(error); // Maybe rather than sending the whole error message, set some status value
-        })
-      })
-
-      const data = result.data;
+      let result = await axios.post(url, formData, {
+        headers: {
+          ...formHeaders,
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+      });
 
       return res.status(200).json({ 
           datetime,
           filename,
-          data,
-      })
-
+          data: result.data,
+      });
     } catch (error) {
-        console.error('Error:', error); // Added logging
-        return res.status(400).json({ message: error.message })
+        return res.status(400).json({ message: error.message });
     }
-
   } else {
-    console.log('Request method is not POST'); // Added logging
     res.status(404).json({ message: 'Not Found' });
   }
 }
