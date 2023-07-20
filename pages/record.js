@@ -1,5 +1,5 @@
 import styles from '../styles/Record.module.css';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import axios from 'axios'; 
 
 const Record = () => {
@@ -31,11 +31,11 @@ const Record = () => {
         });
 
         newMediaRecorder.addEventListener("stop", () => {
-          const audioBlob = new Blob(audioChunks, { 'type' : 'audio/webm' });
+          const audioBlob = new Blob(audioChunks, { 'type' : 'audio/wav' });
           const audioUrl = URL.createObjectURL(audioBlob);
           const audio = new Audio(audioUrl);
-          const file = new File(audioChunks, "test.webm", {
-            type: "audio/webm",
+          const file = new File(audioChunks, "test.wav", {
+            type: "audio/wav",
           });
           setAudioBlob(file);
           setBlobURL(audioUrl);
@@ -52,7 +52,7 @@ const Record = () => {
   };
 
   async function uploadToGCloud(file, type, unique_id) {
-    const filename = `${type}-${unique_id}.${type === 'audio' ? 'webm' : 'pdf'}`;
+    const filename = `${type}-${unique_id}.${type === 'audio' ? 'wav' : 'pdf'}`;
 
     try {
       const response = await axios.post('/api/gcloudUpload', {
@@ -112,7 +112,7 @@ const Record = () => {
   
     try {
       const formData = new FormData();
-      formData.append("audio", audioBlob, 'demo.webm'); // Set the filename to "demo.webm"
+      formData.append("audio", audioBlob, 'demo.wav'); // Set the filename to "demo.wav"
   
       // 1) Generate unique id
       const unique_id = generateUniqueBigInt();
