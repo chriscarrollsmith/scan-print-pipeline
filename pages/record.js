@@ -2,17 +2,15 @@ import styles from '../styles/Record.module.css';
 import { useState, useMemo } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
 import axios from 'axios'; 
-//import { createPdf } from '../scripts/createPDF';
 
 const Record = () => {
   const [audioBlob, setAudioBlob] = useState();
-  const [transcript, setTranscript] = useState();
   const [loading, setLoading] = useState(false);
+  const [resultMessage, setResultMessage] = useState(""); // add new state for result message
 
   const [isRecording, setIsRecording] = useState(false);
   const [blobURL, setBlobURL] = useState("");
   const [isBlocked, setIsBlocked] = useState(false);
-  const [generatedMP3Blob, setGeneratedMP3Blob] = useState(); // State to store the generated MP3 blob
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
 
@@ -34,15 +32,20 @@ const Record = () => {
   const stopRecording = () => {
     setIsRecording(false);
     recorder.stop().getMp3().then(([buffer, blob]) => {
-      const file = new File([buffer], 'demo.mp3', { type: blob.type }); // Set the filename to "demo.mp3"
-      setBlobURL(URL.createObjectURL(blob));
+      const file = new File(buffer, 'me.mp3', {
+        type: blob.type,
+        lastModified: Date.now()
+      });
       setAudioBlob(file);
-      setGeneratedMP3Blob(blob); // Store the generated MP3 blob in the state
+      setBlobURL(URL.createObjectURL(blob));
+    }).catch((e) => {
+      console.log(e);
     });
-  }
+  };
 
-  async function uploadToGCloud(file, type) {
-    const filename = `${type}-${generateUniqueBigInt()}.${type === 'audio' ? 'mp3' : 'pdf'}`;
+  async function uploadToGCloud(file, type, unique_id) {
+    
+    const filename = `${type}-${unique_id}.${type === 'audio' ? 'mp3' : 'pdf'}`;
   
     try {
       const response = await axios.post('/api/gcloudUpload', {
@@ -65,72 +68,54 @@ const Record = () => {
     }
   }
 
+  async function transcribeAudio(url, unique_id, session_title, presenters) {
+    try {
+      const response = await axios.post('/api/transcribe', {
+        src_url: url,
+        unique_id: unique_id,
+        session_title: session_title,
+        presenters: presenters,
+        is_video: false
+      });
+      console.log(response.data);
+      return response.data; // Add this line
+    } catch (error) {
+      console.error(error);
+    }
+  }  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setIsRecording(false);
-
+  
     try {
       const formData = new FormData();
-      formData.append("audio", audioBlob, 'demo.wav'); // Set the filename to "demo.wav"
-
-      // 1) Call Whisper API for transcript
-      const response = await axios.post("/api/whisper", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      const data = response.data;
-      if (data.error) {
-        console.error("Transcription error:", data.error);
-        setTranscript("Error occurred during transcription.");
+      formData.append("audio", audioBlob, 'demo.mp3'); // Set the filename to "demo.mp3"
+  
+      // 1) Generate unique id
+      const unique_id = generateUniqueBigInt();
+  
+      // 2) Upload to GCloud
+      const audioFilePath = await uploadToGCloud(audioBlob, 'audio', unique_id);
+  
+      // 3) Transcribe audio
+      const response = await transcribeAudio(audioFilePath, unique_id, sessionTitle, presenters);
+      if (!response.job_id) {
+        throw new Error('Transcription request failed');
       } else {
-        setTranscript(data.transcription);
-
-        // 2) Convert text to PDF
-        //const pdfBlob = createPdf(sessionTitle, presenters, data.transcription);
-
-        // 3) Upload audio and PDF to Google Cloud Storage
-        const audioFilePath = await uploadToGCloud(audioBlob, 'audio');
-        const pdfFilePath = await uploadToGCloud(pdfBlob, 'pdf');
-
-        // 4) Make request to `api/supabaseUpsert`
-        await upsertTranscript(sessionTitle, data.transcription, audioFilePath, pdfFilePath);
+        setResultMessage("Success!"); // set success message
       }
-
-      // Call the function to trigger the download after successful transcription
-      downloadGeneratedMP3();
     } catch (error) {
-      console.error("An error occurred during transcription:", error);
-      setTranscript("Error occurred during transcription.");
+      console.error(error);
+      setResultMessage("Error!"); // set error message
     } finally {
-      setLoading(false);
+      setLoading(false); // stop loading after transcription completes, whether it succeeds or fails
     }
   }
   
   function generateUniqueBigInt() {
-    return BigInt(Date.now());
-  }
-
-  async function upsertTranscript(sessionName, transcriptText, audioFilePath, pdfFilePath) {
-    try {
-      const response = await axios.post('/api/supabaseUpsert', {
-        sessionName,
-        transcriptText,
-        audioFilePath,
-        pdfFilePath
-      });
-  
-      if (response.status === 200) {
-        console.log('Record inserted:', response.data);
-      } else {
-        console.error('Error inserting record:', response);
-      }
-    } catch (error) {
-      console.error('Error inserting record:', error);
-    }
-  }
+    return Date.now();
+  }  
 
   return (
     <div className="container">
@@ -153,7 +138,7 @@ const Record = () => {
             <audio src={blobURL} controls="controls" />
           </div>
           <div className={styles.loading}>
-            {loading ? <p>Processing...</p> : <p>{transcript}</p>}
+            {loading ? <p>Processing...</p> : <p>{resultMessage}</p>} 
           </div>
           <div className={styles.generatebuttonroot}>
             <button type="submit" className={styles.generatebutton} onClick={handleSubmit} disabled={!audioBlob}>Transcribe</button>
