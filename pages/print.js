@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/Print.module.css'
+import axios from 'axios';
 
 const Print = () => {
   const [transcripts, setTranscripts] = useState([]);
@@ -18,6 +19,24 @@ const Print = () => {
       console.error('An error occurred while fetching the transcripts:', error);
     }
   };
+
+  const printTranscript = async (id) => {
+    // Find the transcript with the corresponding id
+    const transcript = transcripts.find(transcript => transcript.id === id);
+
+    if (!transcript) {
+      console.error(`Transcript with id ${id} not found`);
+      return;
+    }
+
+    // Send a POST request to the /api/print endpoint
+    try {
+      const response = await axios.post('/api/print', { filePath: transcript.transcript_file_path });
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className="container">
@@ -38,7 +57,7 @@ const Print = () => {
               <div className={styles.cell}>{transcript.session_name}</div>
               <div className={styles.cell}>{transcript.presenters}</div>
               <div className={styles.cell}>
-                <button className = {styles.printbutton} id={transcript.id} onClick={() => printTranscript(transcript.id)}>Print</button>
+                <button className={styles.printbutton} onClick={() => printTranscript(transcript.id)}>Print</button>
               </div>
             </div>
           ))}

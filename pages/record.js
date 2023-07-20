@@ -1,7 +1,8 @@
 import styles from '../styles/Record.module.css';
 import { useState, useMemo } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
-import axios from 'axios'; // Import axios for making HTTP requests
+import axios from 'axios'; 
+import { createPdf } from '../scripts/createPDF';
 
 const Record = () => {
   const [audioBlob, setAudioBlob] = useState();
@@ -14,7 +15,9 @@ const Record = () => {
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
 
-  const transcriptText = "this is some dummy transcript text for testing purposes"
+  // Dummy values for session and presenters
+  const sessionTitle = "Dummy Session";
+  const presenters = "Dummy Presenters";
 
   const startRecording = () => {
     if (isBlocked) {
@@ -36,11 +39,10 @@ const Record = () => {
     });
   }
 
-  async function uploadToGCloud(file) {
-    const filename = `audio-${generateUniqueBigInt()}.mp3`;
+  async function uploadToGCloud(file, type) {
+    const filename = `${type}-${generateUniqueBigInt()}.${type === 'audio' ? 'mp3' : 'pdf'}`;
   
     try {
-      // get signed URL from your API
       const response = await axios.post('/api/gcloudUpload', {
         filename,
         contentType: file.type,
@@ -48,14 +50,14 @@ const Record = () => {
   
       const { url } = response.data;
   
-      // upload file to the signed URL
       const result = await axios.put(url, file, {
         headers: {
           'Content-Type': file.type,
         },
       });
   
-      console.log('File uploaded to GCloud:', result);
+      console.log(`File uploaded to GCloud:`, result);
+      return url; // return the uploaded file URL
     } catch (error) {
       console.error(`Error uploading file: ${error}`);
     }
@@ -70,6 +72,7 @@ const Record = () => {
       const formData = new FormData();
       formData.append("audio", audioBlob, "demo.wav"); 
 
+      // 1) Call Whisper API for transcript
       const response = await axios.post("/api/whisper", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -82,6 +85,16 @@ const Record = () => {
         setTranscript("Error occurred during transcription.");
       } else {
         setTranscript(data.transcription);
+
+        // 2) Convert text to PDF
+        const pdfBlob = createPdf(sessionTitle, presenters, data.transcription);
+
+        // 3) Upload audio and PDF to Google Cloud Storage
+        const audioFilePath = await uploadToGCloud(audioBlob, 'audio');
+        const pdfFilePath = await uploadToGCloud(pdfBlob, 'pdf');
+
+        // 4) Make request to `api/supabaseUpsert`
+        await upsertTranscript(sessionTitle, data.transcription, audioFilePath, pdfFilePath);
       }
     } catch (error) {
       console.error("An error occurred during transcription:", error);
