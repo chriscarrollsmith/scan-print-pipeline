@@ -1,15 +1,18 @@
 import styles from '../styles/Record.module.css';
 import { useState, useMemo } from 'react';
+import MicRecorder from 'mic-recorder-to-mp3';
 import axios from 'axios'; 
 
 const Record = () => {
   const [audioBlob, setAudioBlob] = useState();
   const [loading, setLoading] = useState(false);
-  const [resultMessage, setResultMessage] = useState("");
+  const [resultMessage, setResultMessage] = useState(""); // add new state for result message
+
   const [isRecording, setIsRecording] = useState(false);
   const [blobURL, setBlobURL] = useState("");
   const [isBlocked, setIsBlocked] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
+
+  const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
 
   // Dummy values for session and presenters
   const sessionTitle = "Dummy Session";
@@ -20,27 +23,7 @@ const Record = () => {
       console.log('Permission denied');
       setIsBlocked(true);
     } else {
-      navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(stream => {
-        const newMediaRecorder = new MediaRecorder(stream);
-        setMediaRecorder(newMediaRecorder);
-        newMediaRecorder.start();
-
-        const audioChunks = [];
-        newMediaRecorder.addEventListener("dataavailable", event => {
-          audioChunks.push(event.data);
-        });
-
-        newMediaRecorder.addEventListener("stop", () => {
-          const audioBlob = new Blob(audioChunks, { 'type' : 'audio/wav' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          const audio = new Audio(audioUrl);
-          const file = new File(audioChunks, "test.wav", {
-            type: "audio/wav",
-          });
-          setAudioBlob(file);
-          setBlobURL(audioUrl);
-        });
-
+      recorder.start().then(() => {
         setIsRecording(true);
       }).catch(e => console.error(e));
     }
@@ -48,11 +31,20 @@ const Record = () => {
 
   const stopRecording = () => {
     setIsRecording(false);
-    mediaRecorder.stop();
+    recorder.stop().getMp3().then(([buffer, blob]) => {
+      const file = new File(buffer, 'me.mp3', {
+        type: blob.type,
+        lastModified: Date.now()
+      });
+      setAudioBlob(file);
+      setBlobURL(URL.createObjectURL(blob));
+    }).catch((e) => {
+      console.log(e);
+    });
   };
 
   async function uploadToGCloud(file, type, unique_id) {
-    const filename = `${type}-${unique_id}.${type === 'audio' ? 'wav' : 'pdf'}`;
+    const filename = `${type}-${unique_id}.${type === 'audio' ? 'mp3' : 'pdf'}`;
 
     try {
       const response = await axios.post('/api/gcloudUpload', {
@@ -112,7 +104,7 @@ const Record = () => {
   
     try {
       const formData = new FormData();
-      formData.append("audio", audioBlob, 'demo.wav'); // Set the filename to "demo.wav"
+      formData.append("audio", audioBlob, 'demo.mp3'); // Set the filename to "demo.mp3"
   
       // 1) Generate unique id
       const unique_id = generateUniqueBigInt();
