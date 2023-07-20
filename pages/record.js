@@ -2,6 +2,7 @@ import styles from '../styles/Record.module.css';
 import { useState, useMemo } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
 import axios from 'axios';
+import FormData from 'form-data';
 
 const Record = () => {
   const [audioBlob, setAudioBlob] = useState();
@@ -13,6 +14,8 @@ const Record = () => {
   const [isBlocked, setIsBlocked] = useState(false);
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
+
+  const transcriptText = "this is some dummy transcript text for testing purposes"
 
   const startRecording = () => {
     if (isBlocked) {
@@ -64,6 +67,11 @@ const Record = () => {
       });
   
       console.log('File uploaded to GCloud:', result);
+  
+      // make a call to the Whisper API after the file is uploaded
+      const transcribeResponse = await callWhisperAPI(url);
+      console.log('Transcription:', transcribeResponse.data.text);
+  
     } catch (error) {
       console.error(`Error uploading file: ${error}`);
     }
@@ -71,7 +79,26 @@ const Record = () => {
   
   function generateUniqueBigInt() {
     return BigInt(Date.now());
-  }  
+  }
+
+  async function upsertTranscript(sessionName, transcriptText, audioFilePath, pdfFilePath) {
+    try {
+      const response = await axios.post('/api/supabaseUpsert', {
+        sessionName,
+        transcriptText,
+        audioFilePath,
+        pdfFilePath
+      });
+  
+      if (response.status === 200) {
+        console.log('Record inserted:', response.data);
+      } else {
+        console.error('Error inserting record:', response);
+      }
+    } catch (error) {
+      console.error('Error inserting record:', error);
+    }
+  }
 
       const handleSubmit = async(e) => {
         e.preventDefault();

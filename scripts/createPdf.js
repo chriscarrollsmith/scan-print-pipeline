@@ -1,4 +1,4 @@
-// createPdf.js
+// scripts/createPdf.js
 import pdfmake from 'pdfmake/build/pdfmake';
 import vfsFonts from 'pdfmake/build/vfs_fonts';
 

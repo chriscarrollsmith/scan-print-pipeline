@@ -10,7 +10,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 //  "body": {
 //    "sessionName": "Your Session Name",
 //    "transcriptText": "Your Transcript Text",
-//    "filePath": "Your File Path"
+//    "audioFilePath": "Your File Path",
+//    "pdfFilePath": "Your File Path"
 //  },
 //  "method": "POST"
 //}
