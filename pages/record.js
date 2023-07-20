@@ -11,6 +11,7 @@ const Record = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [blobURL, setBlobURL] = useState("");
   const [isBlocked, setIsBlocked] = useState(false);
+  const [generatedMP3Blob, setGeneratedMP3Blob] = useState(); // State to store the generated MP3 blob
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
 
@@ -28,11 +29,24 @@ const Record = () => {
   const stopRecording = () => {
     setIsRecording(false);
     recorder.stop().getMp3().then(([buffer, blob]) => {
-      const file = new File([buffer], 'demo', { type: blob.type });
+      const file = new File([buffer], 'demo.mp3', { type: blob.type }); // Set the filename to "demo.mp3"
       setBlobURL(URL.createObjectURL(blob));
       setAudioBlob(file);
+      setGeneratedMP3Blob(blob); // Store the generated MP3 blob in the state
     });
   }
+
+  const downloadGeneratedMP3 = () => {
+    if (generatedMP3Blob) {
+      const url = URL.createObjectURL(generatedMP3Blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "demo.mp3"; // Set the filename to "demo.mp3"
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +55,7 @@ const Record = () => {
 
     try {
       const formData = new FormData();
-      formData.append("audio", audioBlob, "demo.wav"); 
+      formData.append("audio", audioBlob, 'demo.wav'); // Set the filename to "demo.wav"
 
       const response = await axios.post("/api/whisper", formData, {
         headers: {
@@ -56,6 +70,9 @@ const Record = () => {
       } else {
         setTranscript(data.transcription);
       }
+
+      // Call the function to trigger the download after successful transcription
+      downloadGeneratedMP3();
     } catch (error) {
       console.error("An error occurred during transcription:", error);
       setTranscript("Error occurred during transcription.");

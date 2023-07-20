@@ -15,7 +15,7 @@ module.exports = {
       return config
     },
     env: {
-        siteTitle: 'openai Whisper - Sample WebApp',
+        siteTitle: 'SessionScribe',
     },
     async headers() {
       return [
