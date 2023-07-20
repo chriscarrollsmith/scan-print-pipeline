@@ -3,6 +3,7 @@ import axios from 'axios';
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
+      console.log(req.body)
       const { src_url, unique_id, session_title, presenters, is_video } = req.body;
       
       const response = await axios.post('https://chriscarrollsmith--whisper-audio-video-transcriber-api-v-4c6a21.modal.run/api/transcribe2', {

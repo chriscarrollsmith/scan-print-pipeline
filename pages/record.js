@@ -44,25 +44,40 @@ const Record = () => {
   };
 
   async function uploadToGCloud(file, type, unique_id) {
-    
     const filename = `${type}-${unique_id}.${type === 'audio' ? 'mp3' : 'pdf'}`;
-  
+
     try {
       const response = await axios.post('/api/gcloudUpload', {
         filename,
         contentType: file.type,
       });
-  
+
       const { url } = response.data;
-  
-      const result = await axios.put(url, file, {
-        headers: {
-          'Content-Type': file.type,
-        },
+
+      // promisifying reader operation
+      const reader = new FileReader();
+      const promise = new Promise((resolve, reject) => {
+        reader.onloadend = async (event) => {
+          const blob = new Blob([new Uint8Array(event.target.result)], { type: file.type });
+
+          try {
+            const result = await axios.put(url, blob, {
+              headers: {
+                'Content-Type': file.type,
+              },
+            });
+
+            console.log(`File uploaded to GCloud:`, result);
+            resolve(url); // resolve the promise with the url
+          } catch (error) {
+            reject(`Error uploading file: ${error}`);
+          }
+        };
       });
-  
-      console.log(`File uploaded to GCloud:`, result);
-      return url; // return the uploaded file URL
+
+      reader.readAsArrayBuffer(file);
+
+      return await promise; // await the promise
     } catch (error) {
       console.error(`Error uploading file: ${error}`);
     }
@@ -97,6 +112,7 @@ const Record = () => {
   
       // 2) Upload to GCloud
       const audioFilePath = await uploadToGCloud(audioBlob, 'audio', unique_id);
+      console.log("Audio file path:", audioFilePath);
   
       // 3) Transcribe audio
       const response = await transcribeAudio(audioFilePath, unique_id, sessionTitle, presenters);
