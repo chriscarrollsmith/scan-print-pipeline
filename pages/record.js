@@ -67,8 +67,8 @@ const Record = () => {
               },
             });
 
-            console.log(`File uploaded to GCloud:`, result);
-            resolve(url); // resolve the promise with the url
+            let cleanURL = `${url.origin}${url.pathname}`;
+            resolve(cleanURL); // resolve the promise with the url
           } catch (error) {
             reject(`Error uploading file: ${error}`);
           }
@@ -112,10 +112,9 @@ const Record = () => {
   
       // 2) Upload to GCloud
       const audioFilePath = await uploadToGCloud(audioBlob, 'audio', unique_id);
-      console.log("Audio file path:", audioFilePath);
   
       // 3) Transcribe audio
-      const response = await transcribeAudio(audioFilePath, unique_id, sessionTitle, presenters);
+      const response = await transcribeAudio(audioFilePath, unique_id, sessionTitle, presenters, false);
       if (!response.job_id) {
         throw new Error('Transcription request failed');
       } else {
