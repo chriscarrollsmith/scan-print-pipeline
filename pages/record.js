@@ -1,7 +1,7 @@
 import styles from '../styles/Record.module.css';
 import { useState, useMemo } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
-import axios from 'axios';
+import axios from 'axios'; // Import axios for making HTTP requests
 
 const Record = () => {
   const [audioBlob, setAudioBlob] = useState();
@@ -25,83 +25,44 @@ const Record = () => {
     }
   }
 
-  async function stopRecording() {
+  const stopRecording = () => {
     setIsRecording(false);
-    recorder
-      .stop()
-      .getMp3()
-      .then(async ([buffer, blob]) => {
-        const file = new File(buffer, 'me-at-thevoice.mp3', {
-          type: blob.type,
-          lastModified: Date.now(),
-        });
-  
-        console.log('file is', file);
-        await uploadToGCloud(file);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    recorder.stop().getMp3().then(([buffer, blob]) => {
+      const file = new File([buffer], 'demo', { type: blob.type });
+      setBlobURL(URL.createObjectURL(blob));
+      setAudioBlob(file);
+    });
   }
-  
-  async function uploadToGCloud(file) {
-    const filename = `audio-${generateUniqueBigInt()}.mp3`;
-  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setIsRecording(false);
+
     try {
-      // get signed URL from your API
-      const response = await axios.post('/api/gcloudUpload', {
-        filename,
-        contentType: file.type,
-      });
-  
-      const { url } = response.data;
-  
-      // upload file to the signed URL
-      const result = await axios.put(url, file, {
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "demo.wav"); 
+
+      const response = await axios.post("/api/whisper", formData, {
         headers: {
-          'Content-Type': file.type,
+          "Content-Type": "multipart/form-data",
         },
       });
-  
-      console.log('File uploaded to GCloud:', result);
+
+      const data = response.data;
+      if (data.error) {
+        console.error("Transcription error:", data.error);
+        setTranscript("Error occurred during transcription.");
+      } else {
+        setTranscript(data.transcription);
+      }
     } catch (error) {
-      console.error(`Error uploading file: ${error}`);
+      console.error("An error occurred during transcription:", error);
+      setTranscript("Error occurred during transcription.");
+    } finally {
+      setLoading(false);
     }
-  }
-  
-  function generateUniqueBigInt() {
-    return BigInt(Date.now());
-  }  
-
-      const handleSubmit = async(e) => {
-        e.preventDefault();
-        setLoading(true);
-        setIsRecording(false);
-        
-        const formData = new FormData();
-        formData.append('file', new Blob([audio], { type: 'audio/webm' }));
-        formData.append('name', 'recorded_audio');
-        formData.append('datetime', new Date().toISOString());
-
-        // options can be changed according to requirements
-        const options = {
-          language: 'en', 
-          temperature: 0.7,
-          endpoint: 'transcriptions'
-        };
-        formData.append('options', JSON.stringify(options));
-
-        const response = await fetch("/api/whisper", {
-          method: "POST",
-          body: formData
-        });
-
-        const data = await response.json();
-        console.log(data);
-        setLoading(false);
-        setTranscript(data.data);
-      };
-  
+  };
 
   return (
     <div className="container">
