@@ -28,7 +28,7 @@ const Record = () => {
   const stopRecording = () => {
     setIsRecording(false);
     recorder.stop().getMp3().then(([buffer, blob]) => {
-      const file = new File(buffer, 'disciple.mp3', {
+      const file = new File(buffer, 'demo.wav', { // Change the filename to "demo.wav"
         type: blob.type,
         lastModified: Date.now()
       });

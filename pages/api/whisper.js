@@ -1,30 +1,36 @@
-const openai = require('openai');
-const dotenv = require('dotenv');
-dotenv.config({ path: '.env.local' });
+const express = require('express');
+const router = express.Router();
+const axios = require('axios');
 
-const apiKey = process.env.OPENAI_API_KEY;
-openai.apiKey = apiKey;
+router.post('/', async (req, res) => {
+  const { audio } = req.body;
 
-export default async function handler(req, res) {
   try {
-    const modelParameters = {
-      mp3BytesString: req.body.audio
-    };
+    const response = await axios.post(
+      'https://api.openai.com/v1/audio/transcriptions',
+      {
+        file: `data:audio/wav;base64,${audio}`,
+        model: 'whisper-1'
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+        }
+      }
+    );
 
-    // Use the appropriate OpenAI API method for your task
-    // For example, if you want to use the OpenAI GPT-3 model, you would use openai.Completion.create
-    const output = await openai.Completion.create(modelParameters);
-
-    if (output.choices && output.choices.length > 0) {
-      res.status(200).json(output.choices[0]);
+    const data = response.data;
+    if (data.error) {
+      console.error("Transcription error:", data.error);
+      res.status(500).json({ error: "Error occurred during transcription." });
     } else {
-      console.error("Invalid output data");
-      res.status(500).json({ error: 'Invalid output data' });
-      // Handle the case when the output is empty or undefined
+      res.json({ transcription: data.text });
     }
   } catch (error) {
-    console.error("An error occurred:", error);
-    res.status(500).json({ error: 'An error occurred' });
-    // Handle any other potential errors that may occur during the API request or processing
+    console.error("An error occurred during transcription:", error);
+    res.status(500).json({ error: "Error occurred during transcription." });
   }
-}
+});
+
+module.exports = router;
