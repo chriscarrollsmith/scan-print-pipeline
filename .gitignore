@@ -24,3 +24,6 @@ ENV/
 
 # JSON keys
 gcloudauth.json
+
+# Personal testing
+test0.js
