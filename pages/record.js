@@ -66,9 +66,8 @@ const Record = () => {
                 'Content-Type': file.type,
               },
             });
-
-            let cleanURL = `${url.origin}${url.pathname}`;
-            resolve(cleanURL); // resolve the promise with the url
+            
+            resolve(url); // resolve the promise with the url
           } catch (error) {
             reject(`Error uploading file: ${error}`);
           }
@@ -114,7 +113,9 @@ const Record = () => {
       const audioFilePath = await uploadToGCloud(audioBlob, 'audio', unique_id);
   
       // 3) Transcribe audio
-      const response = await transcribeAudio(audioFilePath, unique_id, sessionTitle, presenters, false);
+      let url = new URL(audioFilePath);
+      let cleanURL = `${url.origin}${url.pathname}`;
+      const response = await transcribeAudio(cleanURL, unique_id, sessionTitle, presenters, false);
       if (!response.job_id) {
         throw new Error('Transcription request failed');
       } else {
