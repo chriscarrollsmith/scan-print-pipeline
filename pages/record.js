@@ -2,7 +2,7 @@ import styles from '../styles/Record.module.css';
 import { useState, useMemo } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
 import axios from 'axios'; 
-import { createPdf } from '../scripts/createPDF';
+//import { createPdf } from '../scripts/createPDF';
 
 const Record = () => {
   const [audioBlob, setAudioBlob] = useState();
@@ -89,7 +89,7 @@ const Record = () => {
         setTranscript(data.transcription);
 
         // 2) Convert text to PDF
-        const pdfBlob = createPdf(sessionTitle, presenters, data.transcription);
+        //const pdfBlob = createPdf(sessionTitle, presenters, data.transcription);
 
         // 3) Upload audio and PDF to Google Cloud Storage
         const audioFilePath = await uploadToGCloud(audioBlob, 'audio');
