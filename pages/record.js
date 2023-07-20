@@ -4,7 +4,7 @@ import MicRecorder from 'mic-recorder-to-mp3';
 import axios from 'axios';
 
 const Record = () => {
-  const [audio, setAudio] = useState();
+  const [audioBlob, setAudioBlob] = useState();
   const [transcript, setTranscript] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -127,7 +127,7 @@ const Record = () => {
             {loading ? <p>Processing...</p> : <p>{transcript}</p>}
           </div>
           <div className={styles.generatebuttonroot}>
-            <button type="submit" className={styles.generatebutton} onClick={handleSubmit} disabled={!audio}>Transcribe</button>
+            <button type="submit" className={styles.generatebutton} onClick={handleSubmit} disabled={!audioBlob}>Transcribe</button>
           </div>
         </div>
       </main>
