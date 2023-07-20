@@ -1,7 +1,7 @@
 import styles from '../styles/Record.module.css';
 import { useState, useMemo } from 'react';
 import MicRecorder from 'mic-recorder-to-mp3';
-import axios from 'axios'; // Import axios for making HTTP requests
+import axios from 'axios';
 
 const Record = () => {
   const [audio, setAudio] = useState();
@@ -25,30 +25,54 @@ const Record = () => {
     }
   }
 
-  const stopRecording = () => {
+  async function stopRecording() {
     setIsRecording(false);
     recorder
       .stop()
       .getMp3()
-      .then(([buffer, blob]) => {
-        const file = new File(buffer, 'disciple.mp3', {
+      .then(async ([buffer, blob]) => {
+        const file = new File(buffer, 'me-at-thevoice.mp3', {
           type: blob.type,
-          lastModified: Date.now()
+          lastModified: Date.now(),
         });
-        setBlobURL(URL.createObjectURL(file));
-        // Convert to base64
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = function () {
-          const base64data = reader.result;
-          // Only send the base64 string
-          const base64String = base64data.split(',')[1];
-          setAudio(base64String);
-        }
-      }
-      )
-      }
-      
+  
+        console.log('file is', file);
+        await uploadToGCloud(file);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+  
+  async function uploadToGCloud(file) {
+    const filename = `audio-${generateUniqueBigInt()}.mp3`;
+  
+    try {
+      // get signed URL from your API
+      const response = await axios.post('/api/gcloudUpload', {
+        filename,
+        contentType: file.type,
+      });
+  
+      const { url } = response.data;
+  
+      // upload file to the signed URL
+      const result = await axios.put(url, file, {
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+  
+      console.log('File uploaded to GCloud:', result);
+    } catch (error) {
+      console.error(`Error uploading file: ${error}`);
+    }
+  }
+  
+  function generateUniqueBigInt() {
+    return BigInt(Date.now());
+  }  
+
       const handleSubmit = async(e) => {
         e.preventDefault();
         setLoading(true);

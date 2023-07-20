@@ -24,3 +24,4 @@ ENV/
 
 # JSON keys
 gcloudauth.json
+cors.js
