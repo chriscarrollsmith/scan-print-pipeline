@@ -4,7 +4,7 @@ import MicRecorder from 'mic-recorder-to-mp3';
 import axios from 'axios'; // Import axios for making HTTP requests
 
 const Record = () => {
-  const [audio, setAudio] = useState();
+  const [audioBlob, setAudioBlob] = useState();
   const [transcript, setTranscript] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -28,18 +28,9 @@ const Record = () => {
   const stopRecording = () => {
     setIsRecording(false);
     recorder.stop().getMp3().then(([buffer, blob]) => {
-      const file = new File(buffer, 'demo.wav', { // Change the filename to "demo.wav"
-        type: blob.type,
-        lastModified: Date.now()
-      });
-      setBlobURL(URL.createObjectURL(file));
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = function () {
-        const base64data = reader.result;
-        const base64String = base64data.split(',')[1];
-        setAudio(base64String);
-      }
+      const file = new File([buffer], 'demo', { type: blob.type });
+      setBlobURL(URL.createObjectURL(blob));
+      setAudioBlob(file);
     });
   }
 
@@ -47,11 +38,17 @@ const Record = () => {
     e.preventDefault();
     setLoading(true);
     setIsRecording(false);
-  
+
     try {
-      const response = await axios.post("/api/whisper", {
-        audio: audio,
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "demo.wav"); 
+
+      const response = await axios.post("/api/whisper", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+
       const data = response.data;
       if (data.error) {
         console.error("Transcription error:", data.error);
@@ -66,7 +63,6 @@ const Record = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="container">
@@ -92,7 +88,7 @@ const Record = () => {
             {loading ? <p>Processing...</p> : <p>{transcript}</p>}
           </div>
           <div className={styles.generatebuttonroot}>
-            <button type="submit" className={styles.generatebutton} onClick={handleSubmit} disabled={!audio}>Transcribe</button>
+            <button type="submit" className={styles.generatebutton} onClick={handleSubmit} disabled={!audioBlob}>Transcribe</button>
           </div>
         </div>
       </main>

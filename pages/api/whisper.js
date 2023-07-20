@@ -1,36 +1,42 @@
-const express = require('express');
-const router = express.Router();
-const axios = require('axios');
+import fs from 'fs';
+import path from 'path';
+import formidable from 'formidable';
 
-router.post('/', async (req, res) => {
-  const { audio } = req.body;
-
-  try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/audio/transcriptions',
-      {
-        file: `data:audio/wav;base64,${audio}`,
-        model: 'whisper-1'
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-        }
-      }
-    );
-
-    const data = response.data;
-    if (data.error) {
-      console.error("Transcription error:", data.error);
-      res.status(500).json({ error: "Error occurred during transcription." });
-    } else {
-      res.json({ transcription: data.text });
-    }
-  } catch (error) {
-    console.error("An error occurred during transcription:", error);
-    res.status(500).json({ error: "Error occurred during transcription." });
+const handler = async (req, res) => {
+  if (req.method !== 'POST') {
+    res.status(405).end(); // Method Not Allowed
+    return;
   }
-});
 
-module.exports = router;
+  const form = new formidable.IncomingForm({
+    uploadDir: path.join(process.cwd(), 'uploads'),
+    keepExtensions: true,
+  });
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error("Error parsing form data:", err);
+      res.status(500).json({ error: "Error occurred during transcription." });
+      return;
+    }
+
+    const audioFile = files.audio;
+    if (!audioFile || audioFile.type !== 'audio/wav') {
+      res.status(400).json({ error: "Invalid audio file. Please upload a WAV file." });
+      return;
+    }
+
+    try {
+      const transcriptionResult = "This is a dummy transcription result.";
+      res.json({ transcription: transcriptionResult });
+    } catch (error) {
+      console.error("An error occurred during transcription:", error);
+      res.status(500).json({ error: "Error occurred during transcription." });
+    } finally {
+      // Delete the temporary audio file after transcription
+      fs.unlinkSync(audioFile.path);
+    }
+  });
+};
+
+export default handler;
