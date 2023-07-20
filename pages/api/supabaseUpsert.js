@@ -9,8 +9,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 //{
 //  "body": {
 //    "sessionName": "Your Session Name",
+//    "presenters": "Your Presenters",
 //    "transcriptText": "Your Transcript Text",
-//    "filePath": "Your File Path"
+//    "audioFilePath": "Your File Path",
+//    "pdfFilePath": "Your File Path"
 //  },
 //  "method": "POST"
 //}
@@ -21,13 +23,13 @@ export default async function supabaseUpsert(req, res) {
     const createdAt = new Date().toISOString();
 
     // Get sessionName, transcriptText and filePath from req.body
-    const { sessionName, transcriptText, filePath } = req.body;
+    const { sessionName, presenters, transcriptText, filePath } = req.body;
 
     try {
       const { data, error } = await supabase
         .from('transcripts')
         .insert([
-          { id: uniqueId, created_at: createdAt, session_name: sessionName, transcript: transcriptText, file_path: filePath },
+          { id: uniqueId, created_at: createdAt, session_name: sessionName, presenters: presenters, transcript: transcriptText, file_path: filePath },
         ])
         .select();
 

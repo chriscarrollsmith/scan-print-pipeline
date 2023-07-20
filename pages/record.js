@@ -15,6 +15,8 @@ const Record = () => {
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
 
+  const transcriptText = "this is some dummy transcript text for testing purposes"
+
   const startRecording = () => {
     if (isBlocked) {
       console.log('Permission denied');
@@ -36,17 +38,30 @@ const Record = () => {
     });
   }
 
-  const downloadGeneratedMP3 = () => {
-    if (generatedMP3Blob) {
-      const url = URL.createObjectURL(generatedMP3Blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "demo.mp3"; // Set the filename to "demo.mp3"
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
+  async function uploadToGCloud(file) {
+    const filename = `audio-${generateUniqueBigInt()}.mp3`;
+  
+    try {
+      // get signed URL from your API
+      const response = await axios.post('/api/gcloudUpload', {
+        filename,
+        contentType: file.type,
+      });
+  
+      const { url } = response.data;
+  
+      // upload file to the signed URL
+      const result = await axios.put(url, file, {
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+  
+      console.log('File uploaded to GCloud:', result);
+    } catch (error) {
+      console.error(`Error uploading file: ${error}`);
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,7 +94,30 @@ const Record = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
+  
+  function generateUniqueBigInt() {
+    return BigInt(Date.now());
+  }
+
+  async function upsertTranscript(sessionName, transcriptText, audioFilePath, pdfFilePath) {
+    try {
+      const response = await axios.post('/api/supabaseUpsert', {
+        sessionName,
+        transcriptText,
+        audioFilePath,
+        pdfFilePath
+      });
+  
+      if (response.status === 200) {
+        console.log('Record inserted:', response.data);
+      } else {
+        console.error('Error inserting record:', response);
+      }
+    } catch (error) {
+      console.error('Error inserting record:', error);
+    }
+  }
 
   return (
     <div className="container">
