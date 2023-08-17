@@ -8,45 +8,25 @@ _Academic conference printing station_. You record in the various rooms at an ac
 
 ### Windows Execution Policy Change
 
-```r
-Run Sequentially in PowerShell
-
+```powershell
 $ Set-ExecutionPolicy RemoteSigned :: select "y"
 $ Get-ExecutionPolicy
 $ RemoteSigned
 ```
 
-### VS Code Terminal
+### Install and Test Locally
 
-```r
-$ npm install
-$ npm --version
-$ yarn add dotenv axios
-$ npm install mic-recorder-to-mp3
-```
-
-### Setup
-
-```r
-macos using homebrew
-$ brew install ffmpeg
-
-windows using chocolatey
-$ choco install ffmpeg
-
-windows using scoop
-$ scoop install ffmpeg
-```
-
-```r
-$ npm create vite@latest :: select "y"
-$ {project-name}
-$ Select "React" framework
-$ Add "JavaScript" variant
-```
-
-```r
+```bash
 $ cd {project-name}
 $ npm install
 $ npm run dev
 ```
+
+## Development To-dos
+
+[ ] I want to add field(s) to the print page for the user to input presenter name and session title (or select from a dropdown?)
+[ ] I want to implement a webhook that the backend can ping when the transcription is complete so we can display an alert and update the print page
+[ ] I want to implement a user signup and auth system
+[ ] I want to enhance the Supabase database so it can track users, events, sessions, and permissions
+[ ] I want to implement a payment/transaction system with Stripe
+[ ] I want to enable users to connect with a printer, either by selling them one or having them provide their printer email address and API key

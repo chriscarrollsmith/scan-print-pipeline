@@ -11,7 +11,7 @@
   },
   "keywords": [],
   "author": "Christopher Carroll Smith and Kevin Mora",
-  "license": "ISC",
+  "license": "LicenseRef-LICENSE",
   "dependencies": {
     "@appland/appmap-agent-js": "^13.9.0",
     "@google-cloud/storage": "^6.12.0",
@@ -25,7 +25,6 @@
     "js-yaml": "^4.1.0",
     "mic-recorder-to-mp3": "^2.2.2",
     "next": "^13.0.1",
-    "openai": "^3.3.0",
     "pdfkit": "^0.13.0",
     "pdfmake": "^0.2.7",
     "react": "^18.2.0",
