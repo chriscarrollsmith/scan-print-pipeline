@@ -1,6 +1,6 @@
 # Transcribe Print Pipeline
 
-Third-place winner in the Epson Challenge Hackathon.
+Frontend for a third-place project from the August 2023 Epson Innovation Challenge hackathon, created by Christopher Smith and Kevin Mora. Meant to be used in combination with our [Python Whisper API](https://github.com/chriscarrollsmith/session-scribe-whisper-api).
 
 You record in the various rooms at an academic conference; the audio files get transcribed to text by Elevenlabs; and the transcripts get printed from an Epson printer at a centralized printing station for distribution to anyone who missed the session.
 
